@@ -2,7 +2,6 @@
 
 namespace Alpixel\Bundle\SEOBundle\DependencyInjection;
 
-use Alpixel\Bundle\SEOBundle\Sitemap\XmlConstraint;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 
