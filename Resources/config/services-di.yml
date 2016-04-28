@@ -11,12 +11,6 @@ services:
         tags:
             - {name: sonata.admin, manager_type: orm, group: 'SEO', label: 'Optimisations manuelles'}
 
-    admin.seo.slugs:
-        class: Alpixel\Bundle\SEOBundle\Admin\AdminSlug
-        arguments: [~, ~, "SEOBundle:AdminSlug"]
-        tags:
-            - {name: sonata.admin, manager_type: orm, group: 'SEO', label: 'Gestion des URLs'}
-
     seo.tags:
        class: Alpixel\Bundle\SEOBundle\Service\MetaTagService
        arguments:
