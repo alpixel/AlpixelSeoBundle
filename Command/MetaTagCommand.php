@@ -58,19 +58,18 @@ class MetaTagCommand extends ContainerAwareCommand
             // remove class name
             array_pop($namespaceParts);
             $bundleNamespace = implode('\\', $namespaceParts);
-            $rootPath = $this->getContainer()->get('kernel')->getRootDir() . '/../src/';
-            $controllerDir = $rootPath . $bundleNamespace . '/Controller';
+            $rootPath = $this->getContainer()->get('kernel')->getRootDir().'/../src/';
+            $controllerDir = $rootPath.$bundleNamespace.'/Controller';
             $controllerDir = strtr($controllerDir, ['\\' => '/']);
             if (is_dir($controllerDir)) {
                 $finder = new Finder();
                 $files = $finder->in($controllerDir)->name('*.php');
 
                 foreach ($files as $file) {
+                    $filename = basename($file->getFilename(), '.'.$file->getExtension());
+                    $basePath = '\\'.strtr(strtr($file->getPath(), [$rootPath => '']), ['/' => '\\']);
 
-                    $filename = basename($file->getFilename(), '.' . $file->getExtension());
-                    $basePath = "\\" . strtr(strtr($file->getPath(), [$rootPath => '']), ['/' => '\\']);
-
-                    $class = $basePath . "\\" . $filename;
+                    $class = $basePath.'\\'.$filename;
                     $reflectedClass = new \ReflectionClass($class);
 
                     foreach ($reflectedClass->getMethods() as $reflectedMethod) {
@@ -78,7 +77,7 @@ class MetaTagCommand extends ContainerAwareCommand
                         $annotations = $this->getContainer()->get('annotation_reader')->getMethodAnnotations($reflectedMethod);
                         foreach ($annotations as $annotation) {
                             if ($annotation instanceof SEOAnnotation\MetaTag) {
-                                $this->saveAnnotation(ltrim($class, '\\') . '::' . $reflectedMethod->getName(), $annotation);
+                                $this->saveAnnotation(ltrim($class, '\\').'::'.$reflectedMethod->getName(), $annotation);
                             }
                         }
                     }
@@ -90,7 +89,7 @@ class MetaTagCommand extends ContainerAwareCommand
         $patterns = $entityManager
             ->getRepository('SEOBundle:MetaTagPattern')
             ->findAll();
-        
+
         foreach ($patterns as $pattern) {
             if (!in_array($pattern->getController(), $this->savedController)) {
                 $entityManager->remove($pattern);
@@ -107,7 +106,7 @@ class MetaTagCommand extends ContainerAwareCommand
         $exists = $entityManager
             ->getRepository('SEOBundle:MetaTagPattern')
             ->findOneBy([
-                'controller' => $controller,
+                'controller'  => $controller,
                 'entityClass' => $annotation->providerClass,
             ]);
 
