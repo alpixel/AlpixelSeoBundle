@@ -48,7 +48,7 @@ class MetaTagService
                 if ($annotation instanceof SEOAnnotation\MetaTag) {
                     $request = $controllerData[0]->getRequest();
                     $controller = $request->get('_controller');
-                    $object = $request->get($annotation->value);
+                    $object = $request->attributes->get($annotation->value);
 
                     if (empty($object)) {
                         continue;

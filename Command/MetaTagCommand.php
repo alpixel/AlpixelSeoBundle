@@ -11,11 +11,13 @@ use Symfony\Component\Finder\Finder;
 
 class MetaTagCommand extends ContainerAwareCommand
 {
+    protected $savedController = [];
+
     public function configure()
     {
         $this
-            ->setName('seo:metatag:patterns')
-            ->setDescription('Generate patterns in database');
+            ->setName('alpixel:seo:metatag:dump')
+            ->setDescription('Save automatic patterns in database');
     }
 
     public function execute(InputInterface $input, OutputInterface $output)
@@ -76,11 +78,22 @@ class MetaTagCommand extends ContainerAwareCommand
                         $annotations = $this->getContainer()->get('annotation_reader')->getMethodAnnotations($reflectedMethod);
                         foreach ($annotations as $annotation) {
                             if ($annotation instanceof SEOAnnotation\MetaTag) {
-                                $this->saveAnnotation(ltrim($class, '\\').'::'.$reflectedMethod->getName(), $annotation);
+                                $this->saveAnnotation(ltrim($class, '\\') . '::' . $reflectedMethod->getName(), $annotation);
                             }
                         }
                     }
                 }
+            }
+        }
+
+        //Cleaning up old controllers
+        $patterns = $entityManager
+            ->getRepository('SEOBundle:MetaTagPattern')
+            ->findAll();
+        
+        foreach ($patterns as $pattern) {
+            if (!in_array($pattern->getController(), $this->savedController)) {
+                $entityManager->remove($pattern);
             }
         }
 
@@ -97,6 +110,8 @@ class MetaTagCommand extends ContainerAwareCommand
                 'controller' => $controller,
                 'entityClass' => $annotation->providerClass,
             ]);
+
+        $this->savedController[] = $controller;
 
         if (is_null($exists)) {
             $pattern = new MetaTagPattern();
