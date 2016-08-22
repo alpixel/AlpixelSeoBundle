@@ -22,3 +22,12 @@ services:
             - { name: kernel.event_listener, event: kernel.controller, method: onControllerFound, priority: -255 }
        calls:
             - [setContainer, ["@service_container"] ]
+
+
+    alpixel_seo.helper:
+            class: Alpixel\Bundle\SEOBundle\Helper\SEOHelper
+            arguments:
+                - "@request_stack"
+                - "%enabled_locales%"
+                - "@sonata.seo.page.default"
+                - "@router"
