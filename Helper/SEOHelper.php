@@ -32,28 +32,26 @@ class SEOHelper
         $this->router = $router;
     }
 
-    public function generateAlternateLangLinks($extraParams = array())
+    public function generateAlternateLangLinks($extraParams = [])
     {
         $request = $this->requestStack->getMasterRequest();
         $route = $request->attributes->get('_route');
 
         foreach ($this->enabledLocales as $locale) {
-            if ($request->getLocale() !== $locale) {
-                $this->seoHelper->addLangAlternate(
-                    $this->router->generate(
-                        $route,
-                        array_merge(
-                            $request->attributes->get('_route_params'),
-                            [
-                                '_locale' => $locale,
-                            ],
-                            $extraParams
-                        ),
-                        Router::ABSOLUTE_URL
+            $this->seoHelper->addLangAlternate(
+                $this->router->generate(
+                    $route,
+                    array_merge(
+                        $request->attributes->get('_route_params'),
+                        [
+                            '_locale' => $locale,
+                        ],
+                        $extraParams
                     ),
-                    $locale
-                );
-            }
+                    Router::ABSOLUTE_URL
+                ),
+                $locale
+            );
         }
     }
 
