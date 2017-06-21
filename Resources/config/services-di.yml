@@ -17,7 +17,7 @@ services:
           - "@sonata.seo.page"
           - "@annotation_reader"
           - "@doctrine"
-          - "@security.token_storage"
+          - "@request_stack"
        tags:
             - { name: kernel.event_listener, event: kernel.controller, method: onControllerFound, priority: -255 }
        calls:

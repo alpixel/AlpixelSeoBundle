@@ -9,6 +9,7 @@ use Doctrine\Bundle\DoctrineBundle\Registry;
 use Doctrine\Common\Annotations\Reader;
 use Sonata\SeoBundle\Seo\SeoPage;
 use Symfony\Component\DependencyInjection\Container;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpKernel\Event\FilterControllerEvent;
 
 class MetaTagService
@@ -16,12 +17,14 @@ class MetaTagService
     protected $doctrine;
     protected $sonataSEO;
     protected $annotationReader;
+    protected $request;
 
-    public function __construct(SeoPage $page, Reader $reader, Registry $doctrine)
+    public function __construct(SeoPage $page, Reader $reader, Registry $doctrine, RequestStack $request)
     {
         $this->annotationReader = $reader;
         $this->doctrine = $doctrine;
         $this->sonataSEO = $page;
+        $this->request = $request;
     }
 
     public function onControllerFound(FilterControllerEvent $event)
@@ -44,7 +47,7 @@ class MetaTagService
         if (!empty($annotations)) {
             foreach ($annotations as $annotation) {
                 if ($annotation instanceof SEOAnnotation\MetaTag) {
-                    $request = $controllerData[0]->getRequest();
+                    $request = $this->request->getMasterRequest();
                     $controller = $request->get('_controller');
                     $object = $request->attributes->get($annotation->value);
 
